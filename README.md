@@ -1,45 +1,66 @@
-# Hello Microservice – FastAPI & Docker
+# Infrastructure as Code – Azure Container App (Terraform)
 
-Microservicio REST desarrollado en **Python con FastAPI**, que expone un endpoint `/hello` y se distribuye como una imagen Docker lista para ejecución local o despliegue en entornos cloud.
+Este proyecto utiliza **Terraform** como herramienta de *Infrastructure as Code (IaC)* para definir y gestionar la infraestructura necesaria para desplegar un microservicio en **Azure Container Apps** de forma declarativa y reproducible.
 
-## Features
+## Objective
 
-- API REST ligera basada en FastAPI  
-- Endpoint `/hello` con respuesta personalizada  
-- Uso de variables de entorno para configuración  
-- Contenerización con Docker  
-- Imagen preparada para entornos productivos
+Provisionar una infraestructura mínima en Azure que permita ejecutar un microservicio contenerizado, siguiendo buenas prácticas DevOps y evitando configuraciones manuales en el portal de Azure.
 
-## Endpoint
+## Terraform Overview
 
-### GET /hello
+Terraform se emplea para describir los recursos de Azure mediante archivos de configuración, permitiendo:
+- Versionar la infraestructura
+- Repetir despliegues de forma consistente
+- Facilitar cambios controlados en los recursos
 
-Devuelve un mensaje de saludo con el nombre configurado.
+## Terraform Files Description
 
-**Ejemplo de respuesta:**
-```json
-{
-  "message": "Hola, soy Alexander 👋"
-}
-```
-## Requirements
-- Python 3.10 o superior
-- Docker
-## Docker Usage
-### Build image
-docker build -t hello-microservice .
+### provider.tf
 
-### Run container
-docker run -p 8000:8000 hello-microservice
+Define el proveedor de nube utilizado en el proyecto.  
+En este caso, se configura **Azure (azurerm)** y se establecen las características necesarias para que Terraform pueda interactuar con la suscripción.
 
-La aplicación estará disponible en:
+### resource_group.tf
 
-http://localhost:8000/hello
+Se encarga de crear el **Resource Group** donde se agrupan todos los recursos relacionados con el despliegue del microservicio.
 
-### Project Structure
-.
-├── app
-│   └── main.py
-├── Dockerfile
-├── requirements.txt
-└── README.md
+### variables.tf
+
+Declara las variables utilizadas por Terraform para parametrizar el despliegue, como:
+- Nombre del proyecto
+- Nombre del container app
+- Imagen del contenedor
+- Región de Azure
+
+Esto permite reutilizar la infraestructura sin modificar el código principal.
+
+### terraform.tfvars
+
+Archivo que contiene los valores concretos de las variables declaradas.  
+Permite separar la configuración del entorno del código, facilitando el uso de distintos entornos (desarrollo, pruebas, producción).
+
+### main.tf
+
+Archivo principal donde se define el **Azure Container App**.  
+Aquí se especifica:
+- La imagen Docker a desplegar
+- Los recursos asignados al contenedor
+- El puerto expuesto
+- La configuración de ingreso externo
+
+## Deployment Flow
+
+1. Terraform inicializa el proveedor de Azure.
+2. Se valida la configuración de la infraestructura.
+3. Se crea o reutiliza el entorno de Azure Container Apps.
+4. Se despliega el microservicio usando la imagen Docker pública.
+5. Azure expone la aplicación mediante una URL accesible externamente.
+
+## Benefits
+
+- Infraestructura reproducible y versionada
+- Menor riesgo de errores manuales
+- Fácil mantenimiento y escalabilidad
+- Integración natural con pipelines CI/CD
+
+
