@@ -21,6 +21,7 @@ Devuelve un mensaje de saludo con el nombre configurado.
 {
   "message": "Hola, soy Alexander 👋"
 }
+```
 ## Requirements
 - Python 3.10 o superior
 - Docker
